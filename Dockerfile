@@ -16,6 +16,6 @@ RUN npm run build && \
     rm -r /usr/src/app/src/ && \
     npm i --only=production
 
-EXPOSE 80
+EXPOSE 4000
 
 CMD ["npm", "start"]
