@@ -1,3 +1,7 @@
+import { Request } from 'express'
+import { IUserDB } from '../models'
+import jwt from 'jsonwebtoken'
+
 export const cleanObj = <T>(obj: T, keys: keyof T | Array<keyof T>) => {
   if (typeof keys === 'string') {
     if (obj[keys]) delete obj[keys]
@@ -28,4 +32,25 @@ export const addDays = (date: Date, amount: number): Date => {
   }
 
   return d
+}
+
+export const getReqToken = (req: Request): string | null => {
+  if (!req.headers.authorization) return null
+  const token = req.headers.authorization.split(' ')
+  return token &&
+    token.length === 2 &&
+    (token[0].includes('Bearer') || token[0].includes('Token'))
+    ? token[1]
+    : null
+}
+
+export const createToken = (val: IUserDB | string): string | Error => {
+  if (!process.env.SIGNKEY) return Error('No signkey secret found')
+  return jwt.sign(
+    typeof val === 'string' ? val : val.toJSON(),
+    process.env.SIGNKEY,
+    {
+      expiresIn: '8h'
+    }
+  )
 }

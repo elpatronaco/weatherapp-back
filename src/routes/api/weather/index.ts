@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express'
 import ResponseHandler from '../../../utils/ResponseHandler'
 import WeatherValidation from '../../../BodyValidation/Weather'
-import { ICityDB, IWeatherDB, IWeatherQuery } from '../../../models'
+import { ICityDB, IWeather, IWeatherDB, IWeatherQuery } from '../../../models'
 import WeatherModel from '../../../schema/weather.model'
 import { getDate, addDays } from '../../../utils'
 
@@ -92,6 +92,29 @@ router
       WeatherModel.deleteMany({}, {}).exec(err => {
         return !err ? response.success.done(res) : response.fail.notfound(res)
       })
+    } catch (err) {
+      return response.fail.handle(res, err)
+    }
+  })
+  .delete('/:pk', async (req: Request, res: Response) => {
+    try {
+      if (!req.params.pk)
+        return response.fail.badRequest(res, 'Missing param pk')
+
+      if (!req.query.date)
+        return response.fail.badRequest(res, 'Missing query date')
+
+      const date = new Date(req.query.date.toString())
+
+      const doc: IWeatherDB | null = await WeatherModel.findOne({
+        pk: req.params.pk,
+        date: date
+      })
+
+      if (doc) {
+        doc.delete()
+        return response.success.done(res)
+      } else return response.fail.notfound(res)
     } catch (err) {
       return response.fail.handle(res, err)
     }

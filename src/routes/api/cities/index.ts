@@ -43,7 +43,8 @@ router
     try {
       const docs = await CitiesModel.find({})
 
-      const finalDocs = docs && docs.length > 0 ? docs.map(doc => doc.toJSON()) : []
+      const finalDocs =
+        docs && docs.length > 0 ? docs.map(doc => doc.toJSON()) : []
 
       return response.success.done(res, finalDocs)
     } catch (err) {
