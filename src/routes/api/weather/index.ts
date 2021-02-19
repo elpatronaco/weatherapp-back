@@ -5,6 +5,7 @@ import { ICityDB, IWeather, IWeatherDB, IWeatherQuery } from '../../../models'
 import WeatherModel from '../../../schema/weather.model'
 import { getDate, addDays } from '../../../utils'
 
+const authMiddleware = require('../../../middleware/authmiddleware')
 const router = Router()
 const response = ResponseHandler()
 const validate = WeatherValidation()
@@ -87,7 +88,7 @@ router
       return response.fail.handle(res, err)
     }
   })
-  .delete('/', (req: Request, res: Response) => {
+  .delete('/', authMiddleware, (req: Request, res: Response) => {
     try {
       WeatherModel.deleteMany({}, {}).exec(err => {
         return !err ? response.success.done(res) : response.fail.notfound(res)
@@ -96,7 +97,7 @@ router
       return response.fail.handle(res, err)
     }
   })
-  .delete('/:pk', async (req: Request, res: Response) => {
+  .delete('/:pk', authMiddleware, async (req: Request, res: Response) => {
     try {
       if (!req.params.pk)
         return response.fail.badRequest(res, 'Missing param pk')
@@ -112,7 +113,7 @@ router
       })
 
       if (doc) {
-        doc.delete()
+        doc.remove()
         return response.success.done(res)
       } else return response.fail.notfound(res)
     } catch (err) {

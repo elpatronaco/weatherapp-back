@@ -9,21 +9,23 @@ const response = ResponseHandler()
 
 module.exports = (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!process.env.SIGNKEY) throw Error('No es troba el secret SIGNKEY')
+    if (!process.env.SIGNKEY) throw Error('SIGNKEY secret not found')
     const authToken: string | null = getReqToken(req)
-    if (!authToken) return res.status(400).send('Falta el Bearer Token')
+    if (!authToken) return response.fail.unauthorized(res, 'Missing token')
     jwt.verify(
       authToken,
       process.env.SIGNKEY,
       async (err: VerifyErrors | null, decoded: object | undefined) => {
         if (err) {
           console.error(err)
-          return res.status(401).send('Token no verificat')
+          return response.fail.unauthorized
         }
-        const user: IUserDB | null = await UserSchema.findById(
-          (decoded as IUserDB)._id
-        )
-        if (!user) return res.status(401).send('Usuari no autoritzat')
+        console.log(decoded)
+        const user: IUserDB | null = await UserSchema.findOne({
+          email: (decoded as IUserDB).email
+        })
+        console.log(user)
+        if (!user) return response.fail.unauthorized(res)
         console.log(user)
         res.locals.user = user.email
         next()
