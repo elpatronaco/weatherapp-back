@@ -2,8 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express'
 import ResponseHandler from '../../../utils/ResponseHandler'
 import CitiesModel from '../../../schema/cities.model'
 import CityValidation from '../../../BodyValidation/Cities'
-import slugify from 'slugify'
-import { ICity, ICityDB } from '../../../models'
+import { ICityDB } from '../../../models'
 
 const router = Router()
 const response = ResponseHandler()

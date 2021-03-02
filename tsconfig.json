@@ -1,7 +1,7 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "target": "esNext",
+    "target": "ES2019",
     "rootDir": "src",
     "outDir": "dist",
     "sourceMap": true,
